@@ -9,6 +9,9 @@ namespace WebCar.DbContext
         public myDbContext(DbContextOptions<myDbContext> options) : base(options)
         {
         }
+        public DbSet<Car> Cars { get; set; } // DbSet for the Car entity
+        public DbSet<CarCompany> CarCompanies { get; set; } // DbSet for the CarCompany entity
+
     }
 }
 

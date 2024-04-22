@@ -102,6 +102,9 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 
+builder.Services.AddScoped<ICarCompanyService, carCompanyService>();
+builder.Services.AddScoped<ICarService, carService>();
+
 
 
 
