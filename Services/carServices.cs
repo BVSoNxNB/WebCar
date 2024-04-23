@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 using WebCar.DbContext;
 using WebCar.Dtos;
 using WebCar.Dtos.Car;
@@ -12,9 +13,11 @@ namespace WebCar.Services
     {
         //Tiêm để sử dụng 
         private readonly myDbContext _dbContext;
-        public carService(myDbContext dbContext)
+        private readonly IRedisCache _cache;
+        public carService(myDbContext dbContext, IRedisCache cache)
         {
             _dbContext = dbContext;
+            _cache = cache;
         }
 
         public async Task<AuthServiceResponseDto> createCarAsync(CarDto carDto)
@@ -57,21 +60,37 @@ namespace WebCar.Services
         {
             try
             {
-                var car = await _dbContext.Cars.FirstOrDefaultAsync(c => c.Id == carId);
-
-                if (car != null)
+                //kiem tra da co du lieu dc luu trong cache chua
+                var cachedData = await _cache.Get($"Car_{carId}");
+                if (cachedData != null)
                 {
-                    // Trả về kết quả thành công nếu tìm thấy công ty xe hơi
+                    //da ton tai. thi convert du lieu tu byte qua json
+                    var car = JsonSerializer.Deserialize<Car>(cachedData);
+                    //tra du lieu ra 
                     return new AuthServiceResponseDto
                     {
                         IsSucceed = true,
-                        Message = "Lấy thông tin Car thành công",
-                        responseData = car,
+                        Message = "Lấy thông tin Car từ cache thành công",
+                        responseData = car
+                    };
+                }
+                //chua co du lieu trong cache thi lay tu database
+                var cars = await _dbContext.Cars.FirstOrDefaultAsync(c => c.Id == carId);
+
+                if (cars != null)
+                {
+                    // add du lieu tu data vao cache 
+                    await _cache.Add($"Car_{carId}", JsonSerializer.Serialize(cars));
+                    //tra du lieu 
+                    return new AuthServiceResponseDto
+                    {
+                        IsSucceed = true,
+                        Message = "Lấy thông tin Car từ database thành công",
+                        responseData = cars
                     };
                 }
                 else
                 {
-                    // Trả về thông báo lỗi nếu không tìm thấy công ty xe hơi với ID đã cho
                     return new AuthServiceResponseDto
                     {
                         IsSucceed = false,
@@ -81,12 +100,10 @@ namespace WebCar.Services
             }
             catch (Exception ex)
             {
-                // Xử lý lỗi nếu có
                 return new AuthServiceResponseDto
                 {
                     IsSucceed = false,
-                    Message = "Đã xảy ra lỗi khi lấy thông tin Car",
-                    responseData = new List<string> { ex.Message }
+                    Message = $"Đã xảy ra lỗi khi lấy thông tin Car: {ex.Message}"
                 };
             }
         }
@@ -94,36 +111,46 @@ namespace WebCar.Services
         {
             try
             {
-                var cars = await _dbContext.Cars.Select(car => car).ToListAsync();
-
-                if (cars != null)
+                //kiem tra ton tai
+                var cachedData = await _cache.Get("allCars");
+                if (cachedData != null)
                 {
-                    // Trả về kết quả thành công nếu tìm thấy các xe hơi
                     return new AuthServiceResponseDto
                     {
                         IsSucceed = true,
-                        Message = "Lấy thông tin Car thành công",
-                        responseData = cars,
+                        Message = "Lấy thông tin tất cả Cars từ cache thành công",
+                        responseData = JsonSerializer.Deserialize<List<Car>>(cachedData)
+                    };
+                }
+                //chua co cache thi lay tu data
+                var cars = await _dbContext.Cars.ToListAsync();
+
+                if (cars != null)
+                {
+                    //luu cache
+                    await _cache.Add("allCars", JsonSerializer.Serialize(cars));
+                    return new AuthServiceResponseDto
+                    {
+                        IsSucceed = true,
+                        Message = "Lấy thông tin tất cả Cars từ database thành công",
+                        responseData = cars
                     };
                 }
                 else
                 {
-                    // Trả về thông báo lỗi nếu không tìm thấy xe hơi nào
                     return new AuthServiceResponseDto
                     {
                         IsSucceed = false,
-                        Message = $"Không tìm thấy Car nào"
+                        Message = "Không tìm thấy bất kỳ CarCompany nào"
                     };
                 }
             }
             catch (Exception ex)
             {
-                // Xử lý lỗi nếu có
                 return new AuthServiceResponseDto
                 {
                     IsSucceed = false,
-                    Message = "Đã xảy ra lỗi khi lấy thông tin Car",
-                    responseData = new List<string> { ex.Message }
+                    Message = $"Đã xảy ra lỗi khi lấy thông tin CarCompanies: {ex.Message}"
                 };
             }
         }

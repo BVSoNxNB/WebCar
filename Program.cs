@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using WebCar.DbContext;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -104,10 +105,10 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddScoped<ICarCompanyService, carCompanyService>();
 builder.Services.AddScoped<ICarService, carService>();
-builder.Services.AddStackExchangeRedisCache(redisOptions =>
-{
-    redisOptions.Configuration = "RedisCacheUrl";
-});
+builder.Services.AddSingleton<IRedisCache, RedisCacheService>();
+
+// Add Redis Cache
+builder.Services.AddStackExchangeRedisCache(options => { options.Configuration = builder.Configuration["RedisCacheUrl"]; });
 
 
 
