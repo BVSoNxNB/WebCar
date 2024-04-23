@@ -12,7 +12,7 @@ namespace WebCar.Models
         public int Id { get; set; }
         [Display(Name = "Full name")]
         public string ten { get; set; }
-        public Object hinh { get; set; }
+        public List<string> hinh { get; set; }
         public string phienBan { get; set; }
         public int namSanXuat { get; set; }
         public double dungTich { get; set; }
@@ -23,9 +23,12 @@ namespace WebCar.Models
         public int kichThuoc { get; set; }
         public int soGhe { get; set; }
         public decimal gia { get; set; }
-        [DataType(DataType.DateTime)]
-        public DateTime ngayTao { get; set; }
-        
+        // Foreign key
+        [ForeignKey("CarCompany")]
+        public int CarCompanyId { get; set; }
+
+        // Navigation property
+        public CarCompany CarCompany { get; set; } // One-to-many relationship
 
 
     }

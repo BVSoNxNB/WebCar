@@ -235,7 +235,7 @@ namespace WebCar.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CarCompanyId")
+                    b.Property<int>("CarCompanyId")
                         .HasColumnType("integer");
 
                     b.Property<double>("dungTich")
@@ -261,9 +261,6 @@ namespace WebCar.Migrations
 
                     b.Property<int>("namSanXuat")
                         .HasColumnType("integer");
-
-                    b.Property<DateTime>("ngayTao")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("nhienLieu")
                         .IsRequired()
@@ -366,9 +363,13 @@ namespace WebCar.Migrations
 
             modelBuilder.Entity("WebCar.Models.Car", b =>
                 {
-                    b.HasOne("WebCar.Models.CarCompany", null)
+                    b.HasOne("WebCar.Models.CarCompany", "CarCompany")
                         .WithMany("Cars")
-                        .HasForeignKey("CarCompanyId");
+                        .HasForeignKey("CarCompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CarCompany");
                 });
 
             modelBuilder.Entity("WebCar.Models.CarCompany", b =>

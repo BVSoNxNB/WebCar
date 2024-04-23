@@ -8,7 +8,7 @@ namespace WebCar.Dtos.Car
     {
         [Required(ErrorMessage = "Ten khong duoc bo trong")]
         public string ten { get; set; }
-        public Object hinh { get; set; }
+        public List<String> hinh { get; set; }
         public string phienBan { get; set; }
         [Required(ErrorMessage = "NamSX khong duoc bo trong")]
         public int namSanXuat { get; set; }
@@ -24,15 +24,8 @@ namespace WebCar.Dtos.Car
         public int soGhe { get; set; }
         [Required(ErrorMessage = "Gia khong duoc bo trong")]
         public decimal gia { get; set; }
-        [DataType(DataType.DateTime)]
-        public DateTime ngayTao { get; set; }
         [Required(ErrorMessage = "Hang xe khong duoc bo trong")]
         public int maHangXe { get; set; }
-        // Foreign key
-        [ForeignKey("CarCompany")]
-        public int CarCompanyId { get; set; }
-
-        // Navigation property
-        public CarCompany CarCompany { get; set; } // One-to-many relationship
+       
     }
 }

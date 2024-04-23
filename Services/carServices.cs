@@ -21,8 +21,7 @@ namespace WebCar.Services
         {
             try
             {
-                var a = DateTime.Now.ToString("yyyy-MM-dd");
-                carDto.ngayTao = a;
+
                 // Tạo một đối tượng Car từ dữ liệu đầu vào
                 var car = new Car
                 {
@@ -38,7 +37,6 @@ namespace WebCar.Services
                     kichThuoc = carDto.kichThuoc,
                     soGhe = carDto.soGhe,
                     gia = carDto.gia,
-                    ngayTao = carDto.ngayTao,
                     CarCompanyId = carDto.maHangXe,
                 };
 
@@ -68,7 +66,7 @@ namespace WebCar.Services
                     {
                         IsSucceed = true,
                         Message = "Lấy thông tin Car thành công",
-                        responseData = car.ten,
+                        responseData = car,
                     };
                 }
                 else
@@ -96,21 +94,21 @@ namespace WebCar.Services
         {
             try
             {
-                var car = await _dbContext.Cars.Select(n => n.ten).ToListAsync();
+                var cars = await _dbContext.Cars.Select(car => car).ToListAsync();
 
-                if (car != null)
+                if (cars != null)
                 {
-                    // Trả về kết quả thành công nếu tìm thấy công ty xe hơi
+                    // Trả về kết quả thành công nếu tìm thấy các xe hơi
                     return new AuthServiceResponseDto
                     {
                         IsSucceed = true,
                         Message = "Lấy thông tin Car thành công",
-                        responseData = car,
+                        responseData = cars,
                     };
                 }
                 else
                 {
-                    // Trả về thông báo lỗi nếu không tìm thấy công ty xe hơi với ID đã cho
+                    // Trả về thông báo lỗi nếu không tìm thấy xe hơi nào
                     return new AuthServiceResponseDto
                     {
                         IsSucceed = false,
@@ -129,6 +127,7 @@ namespace WebCar.Services
                 };
             }
         }
+
         public async Task<AuthServiceResponseDto> updateCarAsync(int carId, CarDto carDto)
         {
             try
@@ -180,7 +179,7 @@ namespace WebCar.Services
         {
             try
             {
-                var existingCar = await _dbContext.CarCompanies.FindAsync(carId);
+                var existingCar = await _dbContext.Cars.FindAsync(carId);
 
                 if (existingCar == null)
                 {
@@ -192,7 +191,7 @@ namespace WebCar.Services
                 }
                 else
                 {
-                    _dbContext.CarCompanies.Remove(existingCar);
+                    _dbContext.Cars.Remove(existingCar);
 
                     // Save changes to the database
                     await _dbContext.SaveChangesAsync();

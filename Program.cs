@@ -104,6 +104,10 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddScoped<ICarCompanyService, carCompanyService>();
 builder.Services.AddScoped<ICarService, carService>();
+builder.Services.AddStackExchangeRedisCache(redisOptions =>
+{
+    redisOptions.Configuration = "RedisCacheUrl";
+});
 
 
 
