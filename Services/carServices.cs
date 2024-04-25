@@ -225,6 +225,7 @@ namespace WebCar.Services
 
                     // Save changes to the database
                     await _dbContext.SaveChangesAsync();
+                    // Xoa cache cu neu co
                     await _cache.Delete("allCars");
                     await _cache.Delete($"Car_{carId}");
 

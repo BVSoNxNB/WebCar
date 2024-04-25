@@ -29,7 +29,7 @@ namespace WebCar.Services
         }
         public async Task Delete(string key)
         {
-            await _cache.RemoveAsync(key);
+            await _cache.RemoveAsync(key); //Xoa Cache
         }
     }
 }

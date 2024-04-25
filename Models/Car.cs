@@ -30,6 +30,7 @@ namespace WebCar.Models
         // Navigation property
         public CarCompany CarCompany { get; set; } // One-to-many relationship
 
+        public ICollection<Order> Orders { get; set; }
 
     }
 }
