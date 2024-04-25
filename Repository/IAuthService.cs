@@ -8,7 +8,9 @@
         Task<AuthServiceResponseDto> SeedRolesAsync();
         Task<AuthServiceResponseDto> RegisterAsync(RegisterDto registerDto);
         Task<AuthServiceResponseDto> LoginAsync(LoginDto loginDto);
+        //Task<AuthServiceResponseDto> LogoutAsync(string token);
         Task<AuthServiceResponseDto> MakeAdminAsync(UpdatePermissionDto updatePermissionDto);
         Task<AuthServiceResponseDto> GetAllRolesAsync();
+        Task<AuthServiceResponseDto> GetRoleUserByUserNameAsync(string userName);
     }
 }

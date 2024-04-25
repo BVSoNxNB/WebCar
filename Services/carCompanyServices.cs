@@ -35,6 +35,7 @@ namespace WebCar.Services
                 //luu vao database
                 _dbContext.CarCompanies.Add(carCompany);
                 await _dbContext.SaveChangesAsync();
+                await _cache.Delete("allCarCompanies");
                 //tra ve khi goi api 
                 return new AuthServiceResponseDto { IsSucceed = true, Message = "Tạo CarCompany thành công" };
             }
@@ -164,7 +165,8 @@ namespace WebCar.Services
                 existingCarCompany.logo = carCompanyDto.logo;
                 //luu du lieu vao data
                 await _dbContext.SaveChangesAsync();
-
+                await _cache.Delete("allCarCompanies");
+                await _cache.Delete($"CarCompany_{carCompanyId}");
                 //tra du lieu
                 return new AuthServiceResponseDto
                 {
@@ -200,6 +202,9 @@ namespace WebCar.Services
                 //xoa du lieu
                 _dbContext.CarCompanies.Remove(existingCarCompany);
                 await _dbContext.SaveChangesAsync();
+                await _cache.Delete("allCarCompanies");
+                await _cache.Delete($"CarCompany_{carCompanyId}");
+
                 //tra du lieu ra man hinh
                 return new AuthServiceResponseDto
                 {

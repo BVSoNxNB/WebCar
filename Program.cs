@@ -116,7 +116,12 @@ builder.Services.AddStackExchangeRedisCache(options => { options.Configuration =
 
 // pipeline
 var app = builder.Build();
+app.UseCors(x => x
+           .AllowAnyOrigin()
+           .AllowAnyMethod()
+           .AllowAnyHeader());
 
+app.UseHttpsRedirection();
 
 if (app.Environment.IsDevelopment())
 {

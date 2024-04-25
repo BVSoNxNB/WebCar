@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using StackExchange.Redis;
 using WebCar.Dtos.Car;
 using WebCar.Repository;
 
@@ -15,8 +18,6 @@ namespace WebCar.Controllers
         {
             _carCompanyService = carCompanyService;
         }
-   
-
         // GET api/<ValuesController>/5
         [HttpGet]
         [Route("getCarCompanyById/{id}")]
@@ -64,6 +65,7 @@ namespace WebCar.Controllers
         }
         // POST api/<ValuesController>
         [HttpPost]
+        [Authorize(Roles = Models.Role.ADMIN)]
         [Route("create-CarCompany")]
         public async Task<IActionResult> createCarCompany([FromBody] CarCompanyDto carCompanyDto)
         {
@@ -77,6 +79,7 @@ namespace WebCar.Controllers
 
         // PUT api/<ValuesController>/5
         [HttpPut]
+        [Authorize(Roles = Models.Role.ADMIN)]
         [Route("updateCarCompany /{id}")]
         public async Task<IActionResult> UpdateCarCompany(int id, [FromBody] CarCompanyDto carCompanyDto)
         {
@@ -94,6 +97,7 @@ namespace WebCar.Controllers
 
         // DELETE api/<ValuesController>/5
         [HttpDelete()]
+        [Authorize(Roles = Models.Role.ADMIN)]
         [Route("deleteCarCompany/{id}")]
         public async Task<IActionResult> deleteCarCompany(int id)
         {

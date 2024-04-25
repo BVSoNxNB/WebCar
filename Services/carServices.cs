@@ -47,6 +47,7 @@ namespace WebCar.Services
                 _dbContext.Cars.Add(car);
                 // Lưu thay đổi vào cơ sở dữ liệu
                 await _dbContext.SaveChangesAsync();
+                await _cache.Delete("allCars");
 
                 return new AuthServiceResponseDto { IsSucceed = true, Message = "Tạo Car thành công" };
             }
@@ -186,6 +187,8 @@ namespace WebCar.Services
 
                 // Save changes to the database
                 await _dbContext.SaveChangesAsync();
+                await _cache.Delete("allCars");
+                await _cache.Delete($"Car_{carId}");
 
                 return new AuthServiceResponseDto
                 {
@@ -222,6 +225,8 @@ namespace WebCar.Services
 
                     // Save changes to the database
                     await _dbContext.SaveChangesAsync();
+                    await _cache.Delete("allCars");
+                    await _cache.Delete($"Car_{carId}");
 
                     return new AuthServiceResponseDto
                     {

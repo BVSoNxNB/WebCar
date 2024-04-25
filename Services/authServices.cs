@@ -15,12 +15,15 @@ namespace WebCar.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public AuthService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+
+        public AuthService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
+            _signInManager = signInManager;
         }
 
 
@@ -65,7 +68,8 @@ namespace WebCar.Services
             return new AuthServiceResponseDto()
             {
                 IsSucceed = true,
-                Message = token
+                Message = "Đăng nhập thành công",   
+                responseData = token
             };
         }
 
@@ -79,7 +83,7 @@ namespace WebCar.Services
                     IsSucceed = false,
                     Message = "Invalid User name!!!!!!!!"
                 };
-
+            await _userManager.RemoveFromRoleAsync(user, Role.USER);
             await _userManager.AddToRoleAsync(user, Role.ADMIN);
 
             return new AuthServiceResponseDto()
@@ -186,5 +190,79 @@ namespace WebCar.Services
 
             return token;
         }
+        //public async Task<AuthServiceResponseDto> LogoutAsync(string token)
+        //{
+        //    try
+        //    {
+        //        Xác thực và lấy thông tin từ token
+        //        var tokenHandler = new JwtSecurityTokenHandler();
+        //        var key = Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]);
+
+        //        tokenHandler.ValidateToken(token, new TokenValidationParameters
+        //        {
+        //            ValidateIssuerSigningKey = true,
+        //            IssuerSigningKey = new SymmetricSecurityKey(key),
+        //            ValidateIssuer = false,
+        //            ValidateAudience = false,
+        //            ClockSkew = TimeSpan.Zero
+        //        }, out SecurityToken validatedToken);
+
+        //        Lấy thông tin người dùng từ token
+        //       var jwtToken = (JwtSecurityToken)validatedToken;
+        //        var userId = jwtToken.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
+
+        //        Tìm người dùng trong cơ sở dữ liệu
+        //        var user = await _userManager.FindByIdAsync(userId);
+
+        //        if (user == null)
+        //        {
+        //            return new AuthServiceResponseDto
+        //            {
+        //                IsSucceed = false,
+        //                Message = "Người dùng không tồn tại"
+        //            };
+        //        }
+
+        //        Thực hiện đăng xuất
+        //        await _signInManager.SignOutAsync();
+
+        //        return new AuthServiceResponseDto
+        //        {
+        //            IsSucceed = true,
+        //            Message = "Đăng xuất thành công"
+        //        };
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return new AuthServiceResponseDto
+        //        {
+        //            IsSucceed = false,
+        //            Message = "Đã xảy ra lỗi trong quá trình đăng xuất: " + ex.Message
+        //        };
+        //    }
+        //}
+        public async Task<AuthServiceResponseDto> GetRoleUserByUserNameAsync(string userName)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+
+            if (user == null)
+            {
+                return new AuthServiceResponseDto
+                {
+                    IsSucceed = false,
+                    Message = "User not found"
+                };
+            }
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            return new AuthServiceResponseDto
+            {
+                IsSucceed = true,
+                Message = "User roles retrieved successfully",
+                responseData = userRoles
+            };
+        }
     }
+
 }

@@ -27,5 +27,9 @@ namespace WebCar.Services
         {
             return await _cache.GetAsync(key); // tra du lieu kieu byte thong qua key 
         }
+        public async Task Delete(string key)
+        {
+            await _cache.RemoveAsync(key);
+        }
     }
 }

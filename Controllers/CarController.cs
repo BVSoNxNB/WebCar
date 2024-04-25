@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebCar.Dtos.Car;
 using WebCar.Repository;
 
@@ -63,6 +64,7 @@ namespace WebCar.Controllers
         // POST api/<ValuesController>
         [HttpPost]
         [Route("create-Car")]
+        [Authorize(Roles = Models.Role.ADMIN)]
         public async Task<IActionResult> createCar([FromBody] CarDto carDto)
         {
             var registerResult = await _carService.createCarAsync(carDto);
@@ -76,6 +78,7 @@ namespace WebCar.Controllers
         // PUT api/<ValuesController>/5
         [HttpPut]
         [Route("updateCar /{id}")]
+        [Authorize(Roles = Models.Role.ADMIN)]
         public async Task<IActionResult> updateCar(int id, [FromBody] CarDto carDto)
         {
             var updateResult = await _carService.updateCarAsync(id, carDto);
@@ -92,6 +95,7 @@ namespace WebCar.Controllers
 
         // DELETE api/<ValuesController>/5
         [HttpDelete()]
+        [Authorize(Roles = Models.Role.ADMIN)]
         [Route("deleteCar/{id}")]
         public async Task<IActionResult> deleteCar(int id)
         {
